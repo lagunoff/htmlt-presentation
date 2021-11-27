@@ -1,0 +1,79 @@
+cabal-version: 2.4
+
+name:                htmlt-presentation
+version:             0.1.0.0
+homepage:            https://github.com/lagunoff/htmlt-presentation
+license:             BSD-3-Clause
+author:              Vladislav Lagunov
+maintainer:          vlad.lagunoff@gmail.com
+copyright:           2021 Vladislav Lagunov
+category:            Web
+build-type:          Simple
+extra-source-files:
+  README.md
+
+executable htmlt-presentation
+  hs-source-dirs: ./src/
+  main-is: htmlt-presentation.hs
+  build-depends:
+    base,
+    ghcjs-base,
+    ghcjs-prim,
+    bytestring,
+    containers,
+    exceptions,
+    htmlt,
+    lens,
+    mtl,
+    ghc-prim,
+    text
+  ghc-options:
+    -Wall -Wno-missing-signatures -Wno-name-shadowing -Wno-unused-matches
+    -Wno-unused-do-bind
+  other-modules:
+    Utils Life Slides
+  default-extensions:
+    AllowAmbiguousTypes
+    BangPatterns
+    BlockArguments
+    ConstraintKinds
+    DataKinds
+    DefaultSignatures
+    DeriveAnyClass
+    DeriveFunctor
+    DeriveGeneric
+    DerivingStrategies
+    DerivingVia
+    DoAndIfThenElse
+    DuplicateRecordFields
+    EmptyDataDecls
+    FlexibleContexts
+    FlexibleInstances
+    ForeignFunctionInterface
+    FunctionalDependencies
+    GADTs
+    GeneralizedNewtypeDeriving
+    ImplicitParams
+    LambdaCase
+    NamedFieldPuns
+    OverloadedLabels
+    OverloadedStrings
+    PackageImports
+    PartialTypeSignatures
+    PatternGuards
+    PolyKinds
+    QuasiQuotes
+    RankNTypes
+    RecordWildCards
+    RecursiveDo
+    ScopedTypeVariables
+    StandaloneDeriving
+    StrictData
+    TemplateHaskell
+    TupleSections
+    TypeApplications
+    TypeFamilies
+    TypeOperators
+    UndecidableInstances
+    ViewPatterns
+  
