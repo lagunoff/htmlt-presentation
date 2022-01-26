@@ -1,11 +1,13 @@
 {
   nixpkgs ? builtins.fetchTarball {
+    # rev = "e7d2f4f8dd9e31c6d6d232dfcc049248886d3ea0";
+    # url = "https://github.com/NixOS/nixpkgs.git";
     url = "https://github.com/NixOS/nixpkgs/archive/refs/tags/20.09.tar.gz";
-  }
+  },
+  pkgs ? import nixpkgs {}
 }:
 let
   inherit (pkgs) lib haskell;
-  pkgs = import nixpkgs {};
   reflexPlatform = import reflexPlatformSrc {};
 
   reflexPlatformSrc = builtins.fetchGit {
@@ -17,7 +19,7 @@ let
     htmlt-presentation = ./.;
     htmlt = builtins.fetchGit {
       url = "https://github.com/lagunoff/htmlt.git";
-      rev = "fd495db4d3b1e91e55f1389c5c2c84ddaf4d12d8";
+      rev = "b37c48007af8977f4209a04cb8e6a4e3f5d8d7e3";
     };
   };
 
@@ -27,11 +29,13 @@ let
     ) (self: super: {
       htmlt = haskell.lib.dontHaddock super.htmlt;
     });
-  } // {
-    shell = pkgs.mkShell {
-      inputsFrom = [self.htmlt-presentation.env];
-    };
   };
 in rec {
+  inherit pkgs;
   ghcjs = mkPackages ghcjs reflexPlatform.ghcjs;
+  ghc = mkPackages ghc pkgs.haskellPackages;
+  shell.ghcjs = pkgs.mkShell {
+    nativeBuildInputs = [pkgs.haskellPackages.cabal-install pkgs.inotify-tools];
+    inputsFrom = [ghcjs.htmlt-presentation.env];
+  };
 }

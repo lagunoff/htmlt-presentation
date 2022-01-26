@@ -1,20 +1,19 @@
-{-# LANGUAGE CPP #-}
 module Utils where
 
-import Data.Coerce
-import Control.Monad
-import Control.Monad.Reader
 import Control.Concurrent
+import Control.Monad
 import Control.Monad.IO.Class
+import Control.Monad.Reader
+import Data.Coerce
 import Data.JSString.Text
 import Data.Text as T
 import GHCJS.Foreign.Callback as GHCJS
 import GHCJS.Types
 import HtmlT
+import JavaScript.Array
 import JavaScript.Object.Internal
 import qualified JavaScript.Object as Object
 import qualified JavaScript.Web.Location as JS
-import JavaScript.Array
 
 mkRouteRef :: MonadReactive m => m (DynRef Text)
 mkRouteRef = do
@@ -59,3 +58,18 @@ foreign import javascript unsafe
 foreign import javascript unsafe
   "$1.querySelectorAll($2)"
   js_querySelectorAll :: DOMElement -> JSString -> IO JSArray
+
+foreign import javascript unsafe
+  "document.body.style.height = '640px';\
+  \document.body.style.width = '1024px';\
+  \var updateBodyScale = function (){\
+  \  if ((window.innerWidth / window.innerHeight) > (1024 / 640)) {\
+  \    document.body.style.transform = 'scale(' + (window.innerHeight / 640) + ')';\
+  \  } else {\
+  \    document.body.style.transform = 'scale(' + (window.innerWidth / 1024) + ')';\
+  \  }\
+  \};\
+  \updateBodyScale();\
+  \window.addEventListener('resize', updateBodyScale);\
+  \"
+  js_setupResizeHandler :: IO ()
