@@ -36,11 +36,10 @@ slidesWidget = \case
         li_ $ a_ [class_ "no_visited", href_ "#3-0"] "What is HtmlT?"
         li_ $ a_ [class_ "no_visited", href_ "#4-0"] "Event, Dynamic and DynRef"
         li_ $ a_ [class_ "no_visited", href_ "#5-0"] "How to Become Dynamic?"
-        li_ $ a_ [class_ "no_visited", href_ "#5-0"] "What is DynRef?"
-        li_ $ a_ [class_ "no_visited", href_ "#6-0"] "What is Transact?"
-        li_ $ a_ [class_ "no_visited", href_ "#7-0"] "Improvements compare to Reflex"
-        li_ $ a_ [class_ "no_visited", href_ "#7-0"] "Game of Life"
-        li_ $ a_ [class_ "no_visited", href_ "#8-0"] "Faster Game of Life"
+        li_ $ a_ [class_ "no_visited", href_ "#6-0"] "What is DynRef?"
+        li_ $ a_ [class_ "no_visited", href_ "#7-0"] "Comparison with Reflex"
+        li_ $ a_ [class_ "no_visited", href_ "#8-0"] "Game of Life"
+        li_ $ a_ [class_ "no_visited", href_ "#9-0"] "Faster Game of Life"
       div_ [class_ "Slide-1-legend"] do
         shortcuts
           [ ("Step forward", ["→", "Space"])
@@ -123,18 +122,14 @@ slidesWidget = \case
 \  <span class=\"token punctuation\">}</span></code></pre>"
   (4, s) -> do
     h1_ "Event, Dynamic and DynRef"
-    div_ [class_ "Slide-4-eventWrapper"] do
-      eventVersionRef <- newRef @Int 2
-      button_ do
-        dynText $ T.pack . show <$> fromRef eventVersionRef
-        on_ "click" $ modifySync eventVersionRef nextEventVersion
-      dyn $ fromRef eventVersionRef <&> \case
-        1 -> unsafeHtml "<pre class=\"language-haskell\" tabindex=\"0\"><code class=\"language-haskell\"><span class=\"token keyword\">newtype</span> <span class=\"token constant\">Event</span> <span class=\"token hvariable\">a</span> <span class=\"token operator\">=</span> <span class=\"token constant\">Event</span>\n\
+    codeVariants 1
+      [ unsafeHtml "<pre class=\"language-haskell\" tabindex=\"0\"><code class=\"language-haskell\"><span class=\"token keyword\">newtype</span> <span class=\"token constant\">Event</span> <span class=\"token hvariable\">a</span> <span class=\"token operator\">=</span> <span class=\"token constant\">Event</span>\n\
   \  <span class=\"token punctuation\">{</span> <span class=\"token hvariable\">unEvent</span> <span class=\"token operator\">::</span> <span class=\"token punctuation\">(</span><span class=\"token hvariable\">a</span> <span class=\"token operator\">-&gt;</span> <span class=\"token constant\">IO</span> <span class=\"token punctuation\">(</span><span class=\"token punctuation\">)</span><span class=\"token punctuation\">)</span> <span class=\"token operator\">-&gt;</span> <span class=\"token constant\">IO</span> <span class=\"token punctuation\">(</span><span class=\"token constant\">IO</span> <span class=\"token punctuation\">(</span><span class=\"token punctuation\">)</span><span class=\"token punctuation\">)</span>\n\
   \  <span class=\"token punctuation\">}</span></code></pre>"
-        _ -> unsafeHtml "<pre class=\"language-haskell\" tabindex=\"0\"><code class=\"language-haskell\"><span class=\"token keyword\">newtype</span> <span class=\"token constant\">Event</span> <span class=\"token hvariable\">a</span> <span class=\"token operator\">=</span> <span class=\"token constant\">Event</span>\n\
+      , unsafeHtml "<pre class=\"language-haskell\" tabindex=\"0\"><code class=\"language-haskell\"><span class=\"token keyword\">newtype</span> <span class=\"token constant\">Event</span> <span class=\"token hvariable\">a</span> <span class=\"token operator\">=</span> <span class=\"token constant\">Event</span>\n\
   \  <span class=\"token punctuation\">{</span> <span class=\"token hvariable\">unEvent</span> <span class=\"token operator\">::</span> <span class=\"token constant\">ReactiveEnv</span> <span class=\"token operator\">-&gt;</span> <span class=\"token constant\">Callback</span> <span class=\"token hvariable\">a</span> <span class=\"token operator\">-&gt;</span> <span class=\"token constant\">IO</span> <span class=\"token constant\">Canceller</span>\n\
   \  <span class=\"token punctuation\">}</span></code></pre>"
+      ]
     unsafeHtml "<pre class=\"language-haskell\" tabindex=\"0\"><code class=\"language-haskell\"><span class=\"token keyword\">data</span> <span class=\"token constant\">Dynamic</span> <span class=\"token hvariable\">a</span> <span class=\"token operator\">=</span> <span class=\"token constant\">Dynamic</span>\n\
 \  <span class=\"token punctuation\">{</span> <span class=\"token hvariable\">dynamic_read</span> <span class=\"token operator\">::</span> <span class=\"token constant\">IO</span> <span class=\"token hvariable\">a</span>\n\
 \  <span class=\"token punctuation\">,</span> <span class=\"token hvariable\">dynamic_updates</span> <span class=\"token operator\">::</span> <span class=\"token constant\">Event</span> <span class=\"token hvariable\">a</span>\n\
@@ -148,29 +143,101 @@ slidesWidget = \case
 \<span class=\"token keyword\">type</span> <span class=\"token constant\">Modifier</span> <span class=\"token hvariable\">a</span> <span class=\"token operator\">=</span> <span class=\"token punctuation\">(</span><span class=\"token hvariable\">a</span> <span class=\"token operator\">-&gt;</span> <span class=\"token hvariable\">a</span><span class=\"token punctuation\">)</span> <span class=\"token operator\">-&gt;</span> <span class=\"token constant\">Transact</span> <span class=\"token punctuation\">(</span><span class=\"token punctuation\">)</span>\n\
 \<span class=\"token keyword\">type</span> <span class=\"token constant\">Canceller</span> <span class=\"token operator\">=</span> <span class=\"token constant\">IO</span> <span class=\"token punctuation\">(</span><span class=\"token punctuation\">)</span></code></pre>"
   (5, s) -> do
-    h1_ $ unsafeHtml "What is <code>DynRef</code>?"
+    h1_ "How to Become Dynamic?"
+    unsafeHtml "<pre class=\"language-haskell\" tabindex=\"0\"><code class=\"language-haskell\"><span class=\"token keyword\">newtype</span> <span class=\"token constant\">ReactiveT</span> <span class=\"token hvariable\">m</span> <span class=\"token hvariable\">a</span> <span class=\"token operator\">=</span> <span class=\"token constant\">ReactiveT</span> <span class=\"token punctuation\">{</span><span class=\"token hvariable\">unReactiveT</span> <span class=\"token operator\">::</span> <span class=\"token constant\">ReaderT</span> <span class=\"token constant\">ReactiveEnv</span> <span class=\"token hvariable\">m</span> <span class=\"token hvariable\">a</span><span class=\"token punctuation\">}</span>\n\
+\<span class=\"token hvariable\">newEvent</span> <span class=\"token operator\">::</span> <span class=\"token constant\">MonadReactive</span> <span class=\"token hvariable\">m</span> <span class=\"token operator\">=&gt;</span> <span class=\"token hvariable\">m</span> <span class=\"token punctuation\">(</span><span class=\"token constant\">Event</span> <span class=\"token hvariable\">a</span><span class=\"token punctuation\">,</span> <span class=\"token constant\">Trigger</span> <span class=\"token hvariable\">a</span><span class=\"token punctuation\">)</span>\n\
+\<span class=\"token hvariable\">newRef</span> <span class=\"token operator\">::</span> <span class=\"token constant\">MonadReactive</span> <span class=\"token hvariable\">m</span> <span class=\"token operator\">=&gt;</span> <span class=\"token hvariable\">a</span> <span class=\"token operator\">-&gt;</span> <span class=\"token hvariable\">m</span> <span class=\"token punctuation\">(</span><span class=\"token constant\">DynRef</span> <span class=\"token hvariable\">a</span><span class=\"token punctuation\">)</span>\n\
+\<span class=\"token hvariable\">execReactiveT</span> <span class=\"token operator\">::</span> <span class=\"token constant\">ReactiveEnv</span> <span class=\"token operator\">-&gt;</span> <span class=\"token constant\">ReactiveT</span> <span class=\"token hvariable\">m</span> <span class=\"token hvariable\">a</span> <span class=\"token operator\">-&gt;</span> <span class=\"token hvariable\">m</span> <span class=\"token hvariable\">a</span>\n\
+\<span class=\"token hvariable\">sync</span> <span class=\"token operator\">::</span> <span class=\"token constant\">MonadIO</span> <span class=\"token hvariable\">m</span> <span class=\"token operator\">=&gt;</span> <span class=\"token constant\">Transact</span> <span class=\"token hvariable\">a</span> <span class=\"token operator\">-&gt;</span> <span class=\"token hvariable\">m</span> <span class=\"token hvariable\">a</span>\n\
+\</code></pre>"
+    unsafeHtml "<pre class=\"language-haskell\" tabindex=\"0\"><code class=\"language-haskell\"><span class=\"token hvariable\">main</span> <span class=\"token operator\">=</span> <span class=\"token hvariable\">execReactiveT</span> <span class=\"token hvariable\">reactiveEnv</span> <span class=\"token keyword\">do</span>\n\
+\  <span class=\"token punctuation\">(</span><span class=\"token hvariable\">intEv</span><span class=\"token punctuation\">,</span> <span class=\"token hvariable\">intTrig</span><span class=\"token punctuation\">)</span> <span class=\"token operator\">&lt;-</span> <span class=\"token hvariable\">newEvent</span> <span class=\"token operator\">@</span><span class=\"token constant\">Int</span>\n\
+\  <span class=\"token keyword\">let</span> <span class=\"token hvariable\">doubleIntEv</span> <span class=\"token operator\">=</span> <span class=\"token punctuation\">(</span><span class=\"token operator\">*</span><span class=\"token number\">2</span><span class=\"token punctuation\">)</span> <span class=\"token operator\">&lt;$&gt;</span> <span class=\"token hvariable\">intEv</span>\n\
+\  <span class=\"token hvariable\">subscribe</span> <span class=\"token hvariable\">intEv</span> <span class=\"token operator\">$</span> <span class=\"token hvariable\">liftIO</span> <span class=\"token operator\">.</span> <span class=\"token builtin\">print</span>\n\
+\  <span class=\"token hvariable\">subscribe</span> <span class=\"token hvariable\">doubleIntEv</span> <span class=\"token operator\">$</span> <span class=\"token hvariable\">liftIO</span> <span class=\"token operator\">.</span> <span class=\"token builtin\">print</span>\n\
+\  <span class=\"token hvariable\">sync</span> <span class=\"token operator\">$</span> <span class=\"token hvariable\">intTrig</span> <span class=\"token number\">1</span> <span class=\"token comment\">-- Prints lines \"1\" and \"2\"</span></code></pre>"
+    unsafeHtml "<pre class=\"language-haskell\" tabindex=\"0\"><code class=\"language-haskell\"><span class=\"token hvariable\">main</span> <span class=\"token operator\">=</span> <span class=\"token hvariable\">execReactiveT</span> <span class=\"token hvariable\">reactiveEnv</span> <span class=\"token keyword\">do</span>\n\
+\  <span class=\"token hvariable\">fooRef</span> <span class=\"token operator\">&lt;-</span> <span class=\"token hvariable\">newRef</span> <span class=\"token operator\">@</span><span class=\"token constant\">Int</span> <span class=\"token number\">0</span>\n\
+\  <span class=\"token hvariable\">barRef</span> <span class=\"token operator\">&lt;-</span> <span class=\"token hvariable\">newRef</span> <span class=\"token operator\">@</span><span class=\"token constant\">Int</span> <span class=\"token number\">0</span>\n\
+\  <span class=\"token keyword\">let</span> <span class=\"token hvariable\">bazDyn</span> <span class=\"token operator\">=</span> <span class=\"token punctuation\">(</span><span class=\"token operator\">*</span><span class=\"token punctuation\">)</span> <span class=\"token operator\">&lt;$&gt;</span> <span class=\"token hvariable\">fromRef</span> <span class=\"token hvariable\">fooRef</span> <span class=\"token operator\">&lt;*&gt;</span> <span class=\"token hvariable\">fromRef</span> <span class=\"token hvariable\">barRef</span>\n\
+\  <span class=\"token hvariable\">forDyn</span> <span class=\"token hvariable\">bazDyn</span> <span class=\"token operator\">$</span> <span class=\"token hvariable\">liftIO</span> <span class=\"token operator\">.</span> <span class=\"token builtin\">print</span> <span class=\"token comment\">-- Prints \"0\" initially</span>\n\
+\  <span class=\"token hvariable\">sync</span> <span class=\"token operator\">$</span> <span class=\"token hvariable\">writeSync</span> <span class=\"token hvariable\">fooRef</span> <span class=\"token number\">3</span> <span class=\"token operator\">&gt;&gt;</span> <span class=\"token hvariable\">writeSync</span> <span class=\"token hvariable\">barRef</span> <span class=\"token number\">4</span> <span class=\"token comment\">-- Prints \"12\" only once</span></code></pre>"
+  (6, s) | s < 3 -> do
+    h1_ "What is DynRef?"
+    codeVariants 0
+      [ unsafeHtml "<pre class=\"language-haskell\" tabindex=\"0\"><code class=\"language-haskell\"><span class=\"token hvariable\">filterInput</span> <span class=\"token operator\">::</span> <span class=\"token constant\">Dynamic</span> <span class=\"token constant\">Text</span> <span class=\"token operator\">-&gt;</span> <span class=\"token hvariable\">m</span> <span class=\"token punctuation\">(</span><span class=\"token constant\">Event</span> <span class=\"token constant\">Text</span><span class=\"token punctuation\">)</span>\n\
+\</code></pre>"
+      , unsafeHtml "<pre class=\"language-haskell\" tabindex=\"0\"><code class=\"language-haskell\"><span class=\"token hvariable\">filterInput</span> <span class=\"token operator\">::</span> <span class=\"token hvariable\">m</span> <span class=\"token punctuation\">(</span><span class=\"token constant\">Dynamic</span> <span class=\"token constant\">Text</span><span class=\"token punctuation\">)</span>\n\
+\</code></pre>"
+      , unsafeHtml "<pre class=\"language-haskell\" tabindex=\"0\"><code class=\"language-haskell\"><span class=\"token hvariable\">filterInput</span> <span class=\"token operator\">::</span> <span class=\"token constant\">Event</span> <span class=\"token constant\">Text</span> <span class=\"token operator\">-&gt;</span> <span class=\"token hvariable\">m</span> <span class=\"token punctuation\">(</span><span class=\"token constant\">Dynamic</span> <span class=\"token constant\">Text</span><span class=\"token punctuation\">)</span>\n\
+\</code></pre>"
+      ]
+    when (s > 0) do
+      unsafeHtml "<pre class=\"language-haskell\" tabindex=\"0\"><code class=\"language-haskell\"><span class=\"token hvariable\">formDyn</span> <span class=\"token operator\">&lt;-</span> <span class=\"token hvariable\">holdDyn</span> <span class=\"token hvariable\">initialVal</span> <span class=\"token operator\">$</span> <span class=\"token hvariable\">leftmost</span>\n\
+\  <span class=\"token punctuation\">[</span> <span class=\"token hvariable\">set</span> <span class=\"token operator\">#</span><span class=\"token hvariable\">foo</span> <span class=\"token operator\">&lt;$&gt;</span> <span class=\"token hvariable\">fooEv</span>\n\
+\  <span class=\"token punctuation\">,</span> <span class=\"token hvariable\">set</span> <span class=\"token operator\">#</span><span class=\"token hvariable\">bar</span> <span class=\"token operator\">&lt;$&gt;</span> <span class=\"token hvariable\">barEv</span>\n\
+\  <span class=\"token punctuation\">,</span> <span class=\"token hvariable\">set</span> <span class=\"token operator\">#</span><span class=\"token hvariable\">baz</span> <span class=\"token operator\">&lt;$&gt;</span> <span class=\"token hvariable\">bazEv</span>\n\
+\  <span class=\"token operator\">...</span>\n\
+\  <span class=\"token punctuation\">]</span>\n\
+\<span class=\"token hvariable\">fooEv</span> <span class=\"token operator\">&lt;-</span> <span class=\"token hvariable\">formInput</span> <span class=\"token punctuation\">(</span><span class=\"token hvariable\">view</span> <span class=\"token operator\">#</span><span class=\"token hvariable\">foo</span> <span class=\"token operator\">&lt;$&gt;</span> <span class=\"token hvariable\">formDyn</span><span class=\"token punctuation\">)</span>\n\
+\<span class=\"token hvariable\">barEv</span> <span class=\"token operator\">&lt;-</span> <span class=\"token hvariable\">formInput</span> <span class=\"token punctuation\">(</span><span class=\"token hvariable\">view</span> <span class=\"token operator\">#</span><span class=\"token hvariable\">bar</span> <span class=\"token operator\">&lt;$&gt;</span> <span class=\"token hvariable\">formDyn</span><span class=\"token punctuation\">)</span>\n\
+\<span class=\"token hvariable\">bazEv</span> <span class=\"token operator\">&lt;-</span> <span class=\"token hvariable\">formInput</span> <span class=\"token punctuation\">(</span><span class=\"token hvariable\">view</span> <span class=\"token operator\">#</span><span class=\"token hvariable\">baz</span> <span class=\"token operator\">&lt;$&gt;</span> <span class=\"token hvariable\">formDyn</span><span class=\"token punctuation\">)</span></code></pre>"
+    when (s > 1) do
+      unsafeHtml "<pre class=\"language-haskell\" tabindex=\"0\"><code class=\"language-haskell\"><span class=\"token comment\">-- How to pass multiple events through dyn, widgetHold, etc?</span>\n\
+\<span class=\"token punctuation\">(</span><span class=\"token hvariable\">fooEv</span><span class=\"token punctuation\">,</span> <span class=\"token hvariable\">barEv</span><span class=\"token punctuation\">,</span> <span class=\"token hvariable\">bazEv</span><span class=\"token punctuation\">)</span> <span class=\"token operator\">&lt;-</span> <span class=\"token hvariable\">dyn</span> <span class=\"token operator\">$</span> <span class=\"token hvariable\">someDyn</span> <span class=\"token operator\">&lt;&amp;&gt;</span> <span class=\"token operator\">\\</span><span class=\"token hvariable\">val</span> <span class=\"token operator\">-&gt;</span> <span class=\"token keyword\">do</span>\n\
+\  <span class=\"token hvariable\">fooEv</span> <span class=\"token operator\">&lt;-</span> <span class=\"token hvariable\">formInput</span> <span class=\"token punctuation\">(</span><span class=\"token hvariable\">view</span> <span class=\"token operator\">#</span><span class=\"token hvariable\">foo</span> <span class=\"token operator\">&lt;$&gt;</span> <span class=\"token hvariable\">formDyn</span><span class=\"token punctuation\">)</span>\n\
+\  <span class=\"token hvariable\">barEv</span> <span class=\"token operator\">&lt;-</span> <span class=\"token hvariable\">formInput</span> <span class=\"token punctuation\">(</span><span class=\"token hvariable\">view</span> <span class=\"token operator\">#</span><span class=\"token hvariable\">bar</span> <span class=\"token operator\">&lt;$&gt;</span> <span class=\"token hvariable\">formDyn</span><span class=\"token punctuation\">)</span>\n\
+\  <span class=\"token hvariable\">bazEv</span> <span class=\"token operator\">&lt;-</span> <span class=\"token hvariable\">formInput</span> <span class=\"token punctuation\">(</span><span class=\"token hvariable\">view</span> <span class=\"token operator\">#</span><span class=\"token hvariable\">baz</span> <span class=\"token operator\">&lt;$&gt;</span> <span class=\"token hvariable\">formDyn</span><span class=\"token punctuation\">)</span>\n\
+\  <span class=\"token builtin\">return</span> <span class=\"token punctuation\">(</span><span class=\"token hvariable\">fooEv</span><span class=\"token punctuation\">,</span> <span class=\"token hvariable\">barEv</span><span class=\"token punctuation\">,</span> <span class=\"token hvariable\">bazEv</span><span class=\"token punctuation\">)</span></code></pre>"
+  (6, s) -> do
+    h1_ "What is DynRef?"
     unsafeHtml "<pre class=\"language-haskell\" tabindex=\"0\"><code class=\"language-haskell\"><span class=\"token keyword\">data</span> <span class=\"token constant\">DynRef</span> <span class=\"token hvariable\">a</span> <span class=\"token operator\">=</span> <span class=\"token constant\">DynRef</span>\n\
 \  <span class=\"token punctuation\">{</span> <span class=\"token hvariable\">dynref_dynamic</span> <span class=\"token operator\">::</span> <span class=\"token constant\">Dynamic</span> <span class=\"token hvariable\">a</span>\n\
 \  <span class=\"token punctuation\">,</span> <span class=\"token hvariable\">dynref_modifier</span> <span class=\"token operator\">::</span> <span class=\"token constant\">Modifier</span> <span class=\"token hvariable\">a</span> <span class=\"token comment\">-- (a -&gt; a) -&gt; Transact ()</span>\n\
-\  <span class=\"token punctuation\">}</span></code></pre>"
-    when (s > 0) do
-      unsafeHtml "<pre class=\"language-haskell\" tabindex=\"0\"><code class=\"language-haskell\"><span class=\"token hvariable\">newRef</span> <span class=\"token operator\">::</span> <span class=\"token hvariable\">forall</span> <span class=\"token hvariable\">a</span> <span class=\"token hvariable\">m</span><span class=\"token punctuation\">.</span> <span class=\"token constant\">MonadReactive</span> <span class=\"token hvariable\">m</span> <span class=\"token operator\">=&gt;</span> <span class=\"token hvariable\">a</span> <span class=\"token operator\">-&gt;</span> <span class=\"token hvariable\">m</span> <span class=\"token punctuation\">(</span><span class=\"token constant\">DynRef</span> <span class=\"token hvariable\">a</span><span class=\"token punctuation\">)</span>\n\
+\  <span class=\"token punctuation\">}</span>\n\
+\\n\
+\<span class=\"token hvariable\">lensMap</span> <span class=\"token operator\">::</span> <span class=\"token constant\">Lens'</span> <span class=\"token hvariable\">s</span> <span class=\"token hvariable\">a</span> <span class=\"token operator\">-&gt;</span> <span class=\"token constant\">DynRef</span> <span class=\"token hvariable\">s</span> <span class=\"token operator\">-&gt;</span> <span class=\"token constant\">DynRef</span> <span class=\"token hvariable\">a</span>\n\
 \</code></pre>"
-    when (s > 1) do
-      unsafeHtml "<pre class=\"language-haskell\" tabindex=\"0\"><code class=\"language-haskell\"><span class=\"token hvariable\">readRef</span> <span class=\"token operator\">::</span> <span class=\"token constant\">MonadIO</span> <span class=\"token hvariable\">m</span> <span class=\"token operator\">=&gt;</span> <span class=\"token constant\">DynRef</span> <span class=\"token hvariable\">a</span> <span class=\"token operator\">-&gt;</span> <span class=\"token hvariable\">m</span> <span class=\"token hvariable\">a</span>\n\
-\<span class=\"token hvariable\">readsRef</span> <span class=\"token operator\">::</span> <span class=\"token constant\">MonadIO</span> <span class=\"token hvariable\">m</span> <span class=\"token operator\">=&gt;</span> <span class=\"token punctuation\">(</span><span class=\"token hvariable\">a</span> <span class=\"token operator\">-&gt;</span> <span class=\"token hvariable\">b</span><span class=\"token punctuation\">)</span> <span class=\"token operator\">-&gt;</span> <span class=\"token constant\">DynRef</span> <span class=\"token hvariable\">a</span> <span class=\"token operator\">-&gt;</span> <span class=\"token hvariable\">m</span> <span class=\"token hvariable\">b</span>\n\
-\<span class=\"token hvariable\">writeRef</span> <span class=\"token operator\">::</span> <span class=\"token constant\">MonadIO</span> <span class=\"token hvariable\">m</span> <span class=\"token operator\">=&gt;</span> <span class=\"token constant\">DynRef</span> <span class=\"token hvariable\">a</span> <span class=\"token operator\">-&gt;</span> <span class=\"token hvariable\">a</span> <span class=\"token operator\">-&gt;</span> <span class=\"token hvariable\">m</span> <span class=\"token punctuation\">(</span><span class=\"token punctuation\">)</span>\n\
-\<span class=\"token hvariable\">writeSync</span> <span class=\"token operator\">::</span> <span class=\"token constant\">DynRef</span> <span class=\"token hvariable\">a</span> <span class=\"token operator\">-&gt;</span> <span class=\"token hvariable\">a</span> <span class=\"token operator\">-&gt;</span> <span class=\"token constant\">Transact</span> <span class=\"token punctuation\">(</span><span class=\"token punctuation\">)</span>\n\
-\<span class=\"token hvariable\">modifyRef</span> <span class=\"token operator\">::</span> <span class=\"token constant\">MonadIO</span> <span class=\"token hvariable\">m</span> <span class=\"token operator\">=&gt;</span> <span class=\"token constant\">DynRef</span> <span class=\"token hvariable\">a</span> <span class=\"token operator\">-&gt;</span> <span class=\"token punctuation\">(</span><span class=\"token hvariable\">a</span> <span class=\"token operator\">-&gt;</span> <span class=\"token hvariable\">a</span><span class=\"token punctuation\">)</span> <span class=\"token operator\">-&gt;</span> <span class=\"token hvariable\">m</span> <span class=\"token punctuation\">(</span><span class=\"token punctuation\">)</span>\n\
-\<span class=\"token hvariable\">modifySync</span> <span class=\"token operator\">::</span> <span class=\"token constant\">DynRef</span> <span class=\"token hvariable\">a</span> <span class=\"token operator\">-&gt;</span> <span class=\"token punctuation\">(</span><span class=\"token hvariable\">a</span> <span class=\"token operator\">-&gt;</span> <span class=\"token hvariable\">a</span><span class=\"token punctuation\">)</span> <span class=\"token operator\">-&gt;</span> <span class=\"token constant\">Transact</span> <span class=\"token punctuation\">(</span><span class=\"token punctuation\">)</span></code></pre>"
-  (6, s) -> do
-    h1_ "What is Transact?"
-    unsafeHtml "<pre class=\"language-haskell\" tabindex=\"0\"><code class=\"language-haskell\"><span class=\"token keyword\">newtype</span> <span class=\"token constant\">Transact</span> <span class=\"token hvariable\">a</span> <span class=\"token operator\">=</span> <span class=\"token constant\">Transact</span>\n\
-\  <span class=\"token punctuation\">{</span> <span class=\"token hvariable\">unTransact</span> <span class=\"token operator\">::</span> <span class=\"token constant\">StateT</span> <span class=\"token constant\">TransactState</span> <span class=\"token constant\">IO</span> <span class=\"token hvariable\">a</span>\n\
-\  <span class=\"token punctuation\">}</span></code></pre>"
-    when (s > 0) do
-      unsafeHtml "<pre class=\"language-haskell\" tabindex=\"0\"><code class=\"language-haskell\"><span class=\"token keyword\">let</span> <span class=\"token hvariable\">abDyn</span> <span class=\"token operator\">=</span> <span class=\"token punctuation\">(</span><span class=\"token punctuation\">,</span><span class=\"token punctuation\">)</span> <span class=\"token operator\">&lt;$&gt;</span> <span class=\"token hvariable\">aDyn</span> <span class=\"token operator\">&lt;*&gt;</span> <span class=\"token hvariable\">bDyn</span></code></pre>"
+    when (s > 3) do
+      unsafeHtml "<pre class=\"language-haskell\" tabindex=\"0\"><code class=\"language-haskell\"><span class=\"token hvariable\">filterInput</span> <span class=\"token operator\">::</span> <span class=\"token constant\">DynRef</span> <span class=\"token constant\">Text</span> <span class=\"token operator\">-&gt;</span> <span class=\"token hvariable\">m</span> <span class=\"token punctuation\">(</span><span class=\"token punctuation\">)</span></code></pre>"
+      unsafeHtml "<pre class=\"language-haskell\" tabindex=\"0\"><code class=\"language-haskell\"><span class=\"token hvariable\">formRef</span> <span class=\"token operator\">&lt;-</span> <span class=\"token hvariable\">newRef</span> <span class=\"token hvariable\">initialVal</span>\n\
+\<span class=\"token hvariable\">formInput</span> <span class=\"token punctuation\">(</span><span class=\"token hvariable\">lensMap</span> <span class=\"token operator\">#</span><span class=\"token hvariable\">foo</span> <span class=\"token hvariable\">formRef</span><span class=\"token punctuation\">)</span>\n\
+\<span class=\"token hvariable\">formInput</span> <span class=\"token punctuation\">(</span><span class=\"token hvariable\">lensMap</span> <span class=\"token operator\">#</span><span class=\"token hvariable\">bar</span> <span class=\"token hvariable\">formRef</span><span class=\"token punctuation\">)</span>\n\
+\<span class=\"token hvariable\">formInput</span> <span class=\"token punctuation\">(</span><span class=\"token hvariable\">lensMap</span> <span class=\"token operator\">#</span><span class=\"token hvariable\">baz</span> <span class=\"token hvariable\">formRef</span><span class=\"token punctuation\">)</span></code></pre>"
   (7, s) -> do
+    h1_ "Comparison with Reflex"
+    when (s == 0) do unsafeHtml "<pre class=\"language-haskell\" tabindex=\"0\"><code class=\"language-haskell\"><span class=\"token comment\">-- Some functions intentionally were made similar to reflex counterparts </span>\n\
+\<span class=\"token hvariable\">dyn</span> <span class=\"token operator\">::</span> <span class=\"token constant\">Dynamic</span> <span class=\"token punctuation\">(</span><span class=\"token constant\">Html</span> <span class=\"token punctuation\">(</span><span class=\"token punctuation\">)</span><span class=\"token punctuation\">)</span> <span class=\"token operator\">-&gt;</span> <span class=\"token constant\">Html</span> <span class=\"token punctuation\">(</span><span class=\"token punctuation\">)</span>\n\
+\<span class=\"token hvariable\">simpleList</span> <span class=\"token operator\">::</span> <span class=\"token constant\">DynRef</span> <span class=\"token punctuation\">[</span><span class=\"token hvariable\">a</span><span class=\"token punctuation\">]</span> <span class=\"token operator\">-&gt;</span> <span class=\"token punctuation\">(</span><span class=\"token constant\">Int</span> <span class=\"token operator\">-&gt;</span> <span class=\"token constant\">DynRef</span> <span class=\"token hvariable\">a</span> <span class=\"token operator\">-&gt;</span> <span class=\"token constant\">Html</span> <span class=\"token punctuation\">(</span><span class=\"token punctuation\">)</span><span class=\"token punctuation\">)</span> <span class=\"token operator\">-&gt;</span> <span class=\"token constant\">Html</span> <span class=\"token punctuation\">(</span><span class=\"token punctuation\">)</span>\n\
+\<span class=\"token hvariable\">updates</span> <span class=\"token operator\">::</span> <span class=\"token constant\">Dynamic</span> <span class=\"token hvariable\">a</span> <span class=\"token operator\">-&gt;</span> <span class=\"token constant\">Event</span> <span class=\"token hvariable\">a</span>\n\
+\<span class=\"token hvariable\">never</span> <span class=\"token operator\">::</span> <span class=\"token constant\">Event</span> <span class=\"token hvariable\">a</span>\n\
+\<span class=\"token hvariable\">mapMaybeE</span> <span class=\"token operator\">::</span> <span class=\"token punctuation\">(</span><span class=\"token hvariable\">a</span> <span class=\"token operator\">-&gt;</span> <span class=\"token constant\">Maybe</span> <span class=\"token hvariable\">b</span><span class=\"token punctuation\">)</span> <span class=\"token operator\">-&gt;</span> <span class=\"token constant\">Event</span> <span class=\"token hvariable\">a</span> <span class=\"token operator\">-&gt;</span> <span class=\"token constant\">Event</span> <span class=\"token hvariable\">b</span>\n\
+\<span class=\"token hvariable\">constDyn</span> <span class=\"token operator\">::</span> <span class=\"token hvariable\">a</span> <span class=\"token operator\">-&gt;</span> <span class=\"token constant\">Dynamic</span> <span class=\"token hvariable\">a</span>\n\
+\<span class=\"token hvariable\">holdUniqDyn</span> <span class=\"token operator\">::</span> <span class=\"token constant\">Eq</span> <span class=\"token hvariable\">a</span> <span class=\"token operator\">=&gt;</span> <span class=\"token constant\">Dynamic</span> <span class=\"token hvariable\">a</span> <span class=\"token operator\">-&gt;</span> <span class=\"token constant\">Dynamic</span> <span class=\"token hvariable\">a</span>\n\
+\<span class=\"token hvariable\">holdUniqDynBy</span> <span class=\"token operator\">::</span> <span class=\"token punctuation\">(</span><span class=\"token hvariable\">a</span> <span class=\"token operator\">-&gt;</span> <span class=\"token hvariable\">a</span> <span class=\"token operator\">-&gt;</span> <span class=\"token constant\">Bool</span><span class=\"token punctuation\">)</span> <span class=\"token operator\">-&gt;</span> <span class=\"token constant\">Dynamic</span> <span class=\"token hvariable\">a</span> <span class=\"token operator\">-&gt;</span> <span class=\"token constant\">Dynamic</span> <span class=\"token hvariable\">a</span>\n\
+\<span class=\"token hvariable\">blank</span> <span class=\"token operator\">::</span> <span class=\"token constant\">Applicative</span> <span class=\"token hvariable\">m</span> <span class=\"token operator\">=&gt;</span> <span class=\"token hvariable\">m</span> <span class=\"token punctuation\">(</span><span class=\"token punctuation\">)</span>\n\
+\</code></pre>"
+    when (s == 1) $ unsafeHtml "<pre class=\"language-haskell\" tabindex=\"0\"><code class=\"language-haskell\"><span class=\"token comment\">-- But there are some new convenient functions</span>\n\
+\<span class=\"token hvariable\">toggleClass</span> <span class=\"token operator\">::</span> <span class=\"token constant\">Text</span> <span class=\"token operator\">-&gt;</span> <span class=\"token constant\">Dynamic</span> <span class=\"token constant\">Bool</span> <span class=\"token operator\">-&gt;</span> <span class=\"token constant\">Html</span> <span class=\"token punctuation\">(</span><span class=\"token punctuation\">)</span>\n\
+\<span class=\"token hvariable\">toggleAttr</span> <span class=\"token operator\">::</span> <span class=\"token constant\">Text</span> <span class=\"token operator\">-&gt;</span> <span class=\"token constant\">Dynamic</span> <span class=\"token constant\">Bool</span> <span class=\"token operator\">-&gt;</span> <span class=\"token constant\">Html</span> <span class=\"token punctuation\">(</span><span class=\"token punctuation\">)</span>\n\
+\<span class=\"token hvariable\">dynStyle</span> <span class=\"token operator\">::</span> <span class=\"token constant\">Text</span> <span class=\"token operator\">-&gt;</span> <span class=\"token constant\">Dynamic</span> <span class=\"token constant\">Text</span> <span class=\"token operator\">-&gt;</span> <span class=\"token constant\">Html</span> <span class=\"token punctuation\">(</span><span class=\"token punctuation\">)</span>\n\
+\\n\
+\<span class=\"token hvariable\">showRef</span> <span class=\"token operator\">&lt;-</span> <span class=\"token hvariable\">newRef</span> <span class=\"token constant\">False</span>\n\
+\<span class=\"token hvariable\">div_</span> <span class=\"token keyword\">do</span>\n\
+\  <span class=\"token hvariable\">toggleClass</span> <span class=\"token string\">\"show\"</span> <span class=\"token operator\">$</span> <span class=\"token hvariable\">fromRef</span> <span class=\"token hvariable\">showRef</span>\n\
+\<span class=\"token hvariable\">button_</span> <span class=\"token keyword\">do</span>\n\
+\  <span class=\"token hvariable\">on_</span> <span class=\"token string\">\"click\"</span> <span class=\"token operator\">$</span> <span class=\"token hvariable\">modifyRef</span> <span class=\"token hvariable\">showRef</span> <span class=\"token builtin\">not</span>\n\
+\  <span class=\"token hvariable\">text</span> <span class=\"token string\">\"Toggle visibility\"</span></code></pre>"
+    when (s == 1) $ unsafeHtml "<pre class=\"language-haskell\" tabindex=\"0\"><code class=\"language-haskell\"><span class=\"token comment\">-- But there are some new convenient functions #2</span>\n\
+\<span class=\"token hvariable\">lensMap</span> <span class=\"token operator\">::</span> <span class=\"token constant\">Lens'</span> <span class=\"token hvariable\">s</span> <span class=\"token hvariable\">a</span> <span class=\"token operator\">-&gt;</span> <span class=\"token constant\">DynRef</span> <span class=\"token hvariable\">s</span> <span class=\"token operator\">-&gt;</span> <span class=\"token constant\">DynRef</span> <span class=\"token hvariable\">a</span>\n\
+\<span class=\"token hvariable\">unsafeHtml</span> <span class=\"token operator\">::</span> <span class=\"token constant\">MonadIO</span> <span class=\"token hvariable\">m</span> <span class=\"token operator\">=&gt;</span> <span class=\"token constant\">Text</span> <span class=\"token operator\">-&gt;</span> <span class=\"token constant\">HtmlT</span> <span class=\"token hvariable\">m</span> <span class=\"token punctuation\">(</span><span class=\"token punctuation\">)</span>\n\
+\<span class=\"token hvariable\">portal</span> <span class=\"token operator\">::</span> <span class=\"token constant\">Monad</span> <span class=\"token hvariable\">m</span> <span class=\"token operator\">=&gt;</span> <span class=\"token constant\">DOMElement</span> <span class=\"token operator\">-&gt;</span> <span class=\"token constant\">HtmlT</span> <span class=\"token hvariable\">m</span> <span class=\"token hvariable\">a</span> <span class=\"token operator\">-&gt;</span> <span class=\"token constant\">HtmlT</span> <span class=\"token hvariable\">m</span> <span class=\"token hvariable\">a</span>\n\
+\\n\
+\<span class=\"token hvariable\">div_</span> <span class=\"token keyword\">do</span>\n\
+\  <span class=\"token hvariable\">unsafeHtml</span> <span class=\"token string\">\"&lt;svg viewBox=\"</span><span class=\"token number\">0</span> <span class=\"token number\">0</span> <span class=\"token number\">100</span> <span class=\"token number\">100</span><span class=\"token string\">\"&gt;\\\n\
+\    \\&lt;circle cx=\"</span><span class=\"token number\">50</span><span class=\"token string\">\" cy=\"</span><span class=\"token number\">50</span><span class=\"token string\">\" r=\"</span><span class=\"token number\">50</span><span class=\"token string\">\"/&gt;\\\n\
+\    \\&lt;/svg&gt;\"</span></code></pre>"
+  (8, s) -> do
     henv <- ask
     h1_ "Game Of Life"
     lifeStateRef <- newRef $ Set.fromList gospelGun
@@ -194,7 +261,7 @@ slidesWidget = \case
         dynText $ T.pack . show . Set.size <$> fromRef lifeStateRef
         ",  FPS:"
         dynText $ T.pack . show <$> fromRef fpsRef
-  (8, s) -> do
+  (9, s) -> do
     henv <- ask
     h1_ "Faster Game Of Life"
     lifeStateRef <- newRef $ Set.fromList gospelGun
@@ -220,7 +287,7 @@ slidesWidget = \case
         dynText $ T.pack . show . Set.size <$> fromRef lifeStateRef
         ",  FPS:"
         dynText $ T.pack . show <$> fromRef fpsRef
-  (9, s) -> do
+  (10, s) -> do
     h1_ [style_ "font-size: 64px; padding-top: 250px"]
       "The End :-)"
 
@@ -242,10 +309,17 @@ slidesWidget = \case
 \width=\"12\" height=\"12\"\n\
 \viewBox=\"0 0 30 30\"\n\
 \style=\" fill:#0089ff; bottom: -2px; position: relative;\"><path d=\"M 25.980469 2.9902344 A 1.0001 1.0001 0 0 0 25.869141 3 L 20 3 A 1.0001 1.0001 0 1 0 20 5 L 23.585938 5 L 13.292969 15.292969 A 1.0001 1.0001 0 1 0 14.707031 16.707031 L 25 6.4140625 L 25 10 A 1.0001 1.0001 0 1 0 27 10 L 27 4.1269531 A 1.0001 1.0001 0 0 0 25.980469 2.9902344 z M 6 7 C 4.9069372 7 4 7.9069372 4 9 L 4 24 C 4 25.093063 4.9069372 26 6 26 L 21 26 C 22.093063 26 23 25.093063 23 24 L 23 14 L 23 11.421875 L 21 13.421875 L 21 16 L 21 24 L 6 24 L 6 9 L 14 9 L 16 9 L 16.578125 9 L 18.578125 7 L 16 7 L 14 7 L 6 7 z\"></path></svg>"
-    nextEventVersion = \case 1 -> 2; _ -> 1
+    codeVariants :: Int -> [Html ()] -> Html ()
+    codeVariants initial variants = div_ [class_ "CodeVariants"] do
+      let len = L.length variants
+      variantRef <- newRef initial
+      button_ do
+        dynText $ T.pack . show . succ <$> fromRef variantRef
+        on_ "click" $ modifySync variantRef $ (`rem` len) . succ
+      dyn $ fromRef variantRef <&> (variants !!)
 
 slideStepLengths :: [Int]
-slideStepLengths = [1, 5, 1, 4, 1, 3, 2, 1, 1, 1]
+slideStepLengths = [1, 5, 1, 4, 1, 1, 5, 2, 1, 1, 1]
 
 updateDomElements :: DOMElement -> Set.Set (Int, Int) -> IO ()
 updateDomElements lifeEl lifeState = do
@@ -401,10 +475,10 @@ slidesStyles = "\
   \.wrapper > *:nth-child(4) {\
   \  margin-left: 8px;\
   \}\
-  \.Slide-4-eventWrapper {\
+  \.CodeVariants {\
   \  position: relative;\
   \}\
-  \.Slide-4-eventWrapper button {\
+  \.CodeVariants button {\
   \  position: absolute;\
   \  bottom: 8px;\
   \  right: 8px;\
